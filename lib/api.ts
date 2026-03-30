@@ -1,4 +1,3 @@
-// src/lib/api.ts
 const API_URL = "http://localhost:8080/api/v1/books";
 
 export interface Book {
@@ -11,14 +10,19 @@ export interface Book {
 }
 
 export const bookApi = {
-  // Отримати всі книги (з можливістю сортування)
-  getBooks: async (sortBy: "author" | "year" | "" = ""): Promise<Book[]> => {
-    const url = sortBy ? `${API_URL}?sortBy=${sortBy}` : API_URL;
+  getBooks: async (
+    sortBy: "author" | "year" | "id" | "" = "",
+    sortDir: "asc" | "desc" = "asc",
+  ): Promise<Book[]> => {
+    const queryParams = new URLSearchParams();
+    if (sortBy) queryParams.append("sortBy", sortBy);
+    queryParams.append("sortDir", sortDir);
+
+    const url = `${API_URL}?${queryParams.toString()}`;
     const res = await fetch(url, { cache: "no-store" });
     return res.json();
   },
 
-  // Додати книгу
   addBook: async (book: Book): Promise<Book> => {
     const res = await fetch(API_URL, {
       method: "POST",
@@ -28,7 +32,15 @@ export const bookApi = {
     return res.json();
   },
 
-  // Видалити книгу
+  updateBook: async (id: number, book: Book): Promise<Book> => {
+    const res = await fetch(`${API_URL}/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(book),
+    });
+    return res.json();
+  },
+
   deleteBook: async (id: number): Promise<void> => {
     await fetch(`${API_URL}/${id}`, { method: "DELETE" });
   },
