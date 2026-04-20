@@ -5,10 +5,12 @@ const AddBookModal = ({
   close,
   fetchBooks,
   editingBook,
+  setEditingBook,
 }: {
   close: () => void;
   fetchBooks: () => void;
   editingBook?: any;
+  setEditingBook: (book: any) => void;
 }) => {
   const [bookData, setBookData] = useState({
     authorLastName: editingBook ? editingBook.authorLastName : "",
@@ -43,6 +45,14 @@ const AddBookModal = ({
       });
 
       await fetchBooks();
+      setBookData({
+        authorLastName: "",
+        authorInitials: "",
+        title: "",
+        publicationYear: "",
+        copiesCount: "",
+      });
+      setEditingBook(undefined);
       close();
     } catch (error) {
       console.log("Помилка при додаванні книги:", error);
@@ -69,6 +79,14 @@ const AddBookModal = ({
       });
 
       await fetchBooks();
+      setBookData({
+        authorLastName: "",
+        authorInitials: "",
+        title: "",
+        publicationYear: "",
+        copiesCount: "",
+      });
+      setEditingBook(undefined);
       close();
     } catch (error) {
       console.log("Помилка при оновленні книги:", error);

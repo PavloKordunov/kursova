@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/v1/books";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export interface Book {
   id?: number;
@@ -24,7 +24,7 @@ export const bookApi = {
   },
 
   addBook: async (book: Book): Promise<Book> => {
-    const res = await fetch(API_URL, {
+    const res = await fetch(`${API_URL}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(book),

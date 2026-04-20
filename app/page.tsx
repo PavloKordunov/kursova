@@ -316,6 +316,7 @@ export default function LibraryPage() {
         <AddBookModal
           close={() => setOpenModal(false)}
           editingBook={editingBook}
+          setEditingBook={setEditingBook}
           fetchBooks={() => fetchBooks(currentSortBy, currentSortDir)}
         />
       )}
