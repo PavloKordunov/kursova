@@ -1,3 +1,5 @@
+import { get } from "http";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export interface Book {
@@ -7,6 +9,9 @@ export interface Book {
   title: string;
   publicationYear: number;
   copiesCount: number;
+  price: number;
+  image?: string;
+  description?: string;
 }
 
 export const bookApi = {
@@ -20,6 +25,11 @@ export const bookApi = {
 
     const url = `${API_URL}?${queryParams.toString()}`;
     const res = await fetch(url, { cache: "no-store" });
+    return res.json();
+  },
+
+  getBookById: async (id: number): Promise<Book> => {
+    const res = await fetch(`${API_URL}/${id}`, { cache: "no-store" });
     return res.json();
   },
 

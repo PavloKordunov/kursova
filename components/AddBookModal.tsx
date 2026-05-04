@@ -18,9 +18,14 @@ const AddBookModal = ({
     title: editingBook ? editingBook.title : "",
     publicationYear: editingBook ? editingBook.publicationYear.toString() : "",
     copiesCount: editingBook ? editingBook.copiesCount.toString() : "",
+    price: editingBook ? editingBook.price.toString() : "",
+    image: editingBook ? editingBook.image : "",
+    description: editingBook ? editingBook.description : "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setBookData((prev) => ({ ...prev, [name]: value }));
   };
@@ -32,7 +37,8 @@ const AddBookModal = ({
         !bookData.authorInitials ||
         !bookData.title ||
         !bookData.publicationYear ||
-        !bookData.copiesCount
+        !bookData.copiesCount ||
+        !bookData.price
       ) {
         alert("Будь ласка, заповніть всі поля!");
         return;
@@ -42,6 +48,7 @@ const AddBookModal = ({
         ...bookData,
         publicationYear: Number(bookData.publicationYear),
         copiesCount: Number(bookData.copiesCount),
+        price: Number(bookData.price),
       });
 
       await fetchBooks();
@@ -51,6 +58,9 @@ const AddBookModal = ({
         title: "",
         publicationYear: "",
         copiesCount: "",
+        price: "",
+        image: "",
+        description: "",
       });
       setEditingBook(undefined);
       close();
@@ -66,7 +76,8 @@ const AddBookModal = ({
         !bookData.authorInitials ||
         !bookData.title ||
         !bookData.publicationYear ||
-        !bookData.copiesCount
+        !bookData.copiesCount ||
+        !bookData.price
       ) {
         alert("Будь ласка, заповніть всі поля!");
         return;
@@ -76,6 +87,7 @@ const AddBookModal = ({
         ...bookData,
         publicationYear: Number(bookData.publicationYear),
         copiesCount: Number(bookData.copiesCount),
+        price: Number(bookData.price),
       });
 
       await fetchBooks();
@@ -85,6 +97,9 @@ const AddBookModal = ({
         title: "",
         publicationYear: "",
         copiesCount: "",
+        price: "",
+        image: "",
+        description: "",
       });
       setEditingBook(undefined);
       close();
@@ -93,9 +108,18 @@ const AddBookModal = ({
     }
   };
 
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => resolve(fileReader.result as string);
+      fileReader.onerror = (error) => reject(error);
+    });
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm p-4 flex justify-center items-center">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white h-full rounded-2xl shadow-2xl w-full max-w-lg overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
           <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
             <svg
@@ -205,6 +229,50 @@ const AddBookModal = ({
               />
             </div>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Ціна (грн.)
+            </label>
+            <input
+              type="number"
+              name="price"
+              placeholder="25.99"
+              value={bookData.price}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow bg-gray-50 hover:bg-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Опис
+            </label>
+            <textarea
+              name="description"
+              rows={4}
+              style={{ resize: "none" }}
+              placeholder="Опис книги"
+              value={bookData.description || ""}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow bg-gray-50 hover:bg-white"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">
+              Обкладинка книги
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="w-full border p-2 rounded"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const base64 = await convertToBase64(file);
+                  setBookData({ ...bookData, image: base64 });
+                }
+              }}
+            />
+          </div>
         </div>
 
         <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50/50">
@@ -216,7 +284,7 @@ const AddBookModal = ({
           </button>
           <button
             onClick={editingBook ? handleUpdate : handleSubmit}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium shadow-md shadow-blue-500/20 transition-all active:scale-95"
+            className="bg-black hover:bg-gray-800 text-white px-6 py-2.5 rounded-xl font-medium shadow-md shadow-blue-500/20 transition-all active:scale-95"
           >
             Зберегти книгу
           </button>
